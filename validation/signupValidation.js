@@ -12,10 +12,11 @@ const schema = yup.object().shape({
   profile_pic: yup.string(),
 });
 
-const signupValidation = (req, res, next) => {
+const signupValidation = async (req, res, next) => {
   try {
-    const data = schema.validate(req.body);
+    const data = await schema.validate(req.body);
     req.body = data;
+    next();
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
