@@ -35,28 +35,28 @@ const userSchema = new mongoose.Schema({
     type: String,
     default: "No description provided",
   },
-  videos: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "videomodel",
-    },
-  ],
-  total_views: {
-    type: Number,
-    default: 0,
-  },
-  liked_videos: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "videomodel",
-    },
-  ],
-  disliked_videos: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "videomodel",
-    },
-  ],
+  // videos: [
+  //   {
+  //     type: mongoose.Schema.Types.ObjectId,
+  //     ref: "videomodel",
+  //   },
+  // ],
+  // total_views: {
+  //   type: Number,
+  //   default: 0,
+  // },
+  // liked_videos: [
+  //   {
+  //     type: mongoose.Schema.Types.ObjectId,
+  //     ref: "videomodel",
+  //   },
+  // ],
+  // disliked_videos: [
+  //   {
+  //     type: mongoose.Schema.Types.ObjectId,
+  //     ref: "videomodel",
+  //   },
+  // ],
 });
 
 const usermodel = mongoose.model("usermodel", userSchema);
