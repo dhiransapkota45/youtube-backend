@@ -1,4 +1,4 @@
-const mongoose = require("mogoose");
+const mongoose = require("mongoose");
 
 const videoSchema = new mongoose.Schema(
   {
@@ -39,6 +39,7 @@ const videoSchema = new mongoose.Schema(
     uploader: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "usermodel",
+      required: true,
     },
   },
   { timestamps: true }
