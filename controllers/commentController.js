@@ -86,4 +86,4 @@ const dislikecomment = async (req, res) => {
   }
 };
 
-module.exports = { createcomment };
+module.exports = { createcomment, likecomment, dislikecomment };
