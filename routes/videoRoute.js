@@ -1,5 +1,5 @@
 const express = require("express");
-const { uploadVideo } = require("../controllers/videoController");
+const { uploadVideo, streamvideo } = require("../controllers/videoController");
 const verifyToken = require("../middlewares/verifyToken");
 const upload = require("../utils/multer-video");
 const videoValidation = require("../validation/videoValidation");
@@ -12,5 +12,8 @@ router.post(
   videoValidation,
   uploadVideo
 );
+
+router.post("/streamvideo/:id", verifyToken, streamvideo);
+
 
 module.exports = router;
