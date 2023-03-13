@@ -1,6 +1,10 @@
 const mongoose = require("mongoose");
 
 const commentSchema = new mongoose.Schema({
+  video: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "videomodel",
+  },
   commenter: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "usermodel",
