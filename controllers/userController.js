@@ -15,8 +15,11 @@ const signup = async (req, res) => {
       profile_pic: req.file.filename,
     });
 
-    const token = generateToken(newuser._id);
-    return res.status(201).json({ accessToken: token });
+    const accessToken = generateToken(newuser._id, "access");
+    const refreshToken = generateToken(newuser._id, "refresh");
+    return res
+      .status(201)
+      .json({ accessToken: accessToken, refreshToken: refreshToken });
   } catch (error) {
     return res.status(500).json(error);
   }
@@ -33,8 +36,9 @@ const signin = async (req, res) => {
       return res.status(400).json({ message: "Incorrect password" });
     }
 
-    const token = generateToken(finduser._id);
-    return res.status(200).json({ accessToken: token });
+    const accessToken = generateToken(finduser._id, "access");
+    const refreshToken = generateToken(finduser._id, "refresh");
+    return res.status(200).json({ accessToken, refreshToken });
   } catch (error) {
     return res.status(500).json(error);
   }
@@ -94,6 +98,22 @@ const unsubscribe = async (req, res) => {
   }
 };
 
+const verifyRefeshToken = async (req, res) => {
+  try {
+    const refreshToken = req.header("refreshToken");
+    if (!refreshToken)
+      return res.status(401).json({ message: "Access Denied" });
 
+    const verified = jwt.verify(refreshToken, process.env.JWT_SECRET);
+    if (!verified) return res.status(401).json({ message: "Access Denied" });
 
-module.exports = { signin, signup, subscribe, unsubscribe };
+    const accessToken = generateToken(verified.id, "access");
+    const newRefreshToken = generateToken(verified.id, "refresh");
+
+    return res.status(200).json({ accessToken, refreshToken: newRefreshToken });
+  } catch (error) {
+    return res.status(500).json(error);
+  }
+};
+
+module.exports = { signin, signup, subscribe, unsubscribe, verifyRefeshToken };
