@@ -1,5 +1,6 @@
 const videomodel = require("../models/videomodel");
 const fs = require("fs");
+const uploadThumbnail = require("../utils/multer-thumbnail");
 
 const uploadVideo = async (req, res) => {
   try {
@@ -12,6 +13,7 @@ const uploadVideo = async (req, res) => {
       title,
       description,
       uploader,
+      thumbnail: "https://getuikit.com/v2/docs/images/placeholder_600x400.svg",
     });
 
     return res
@@ -198,6 +200,26 @@ const getallvideos = async (req, res) => {
   }
 };
 
+const thumbnailupload = async (req, res) => {
+  try {
+    const { id } = req.params;
+    if (!id) return res.status(400).json({ msg: "video id is required" });
+
+    const thumbnail = req.file.filename;
+    if (!thumbnail)
+      return res.status(400).json({ msg: "thumbnail is required" });
+
+    const updatevideo = await videomodel.findByIdAndUpdate(id, {
+      thumbnail,
+    });
+    if (!updatevideo) return res.status(404).json({ msg: "video not found" });
+
+    return res.status(200).json({ msg: "thumbnail uploaded" });
+  } catch (error) {
+    return res.status(500).json({ error });
+  }
+};
+
 module.exports = {
   uploadVideo,
   streamvideo,
@@ -207,4 +229,5 @@ module.exports = {
   getlikedvideos,
   getdislikedvideos,
   getallvideos,
+  thumbnailupload,
 };

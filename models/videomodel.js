@@ -41,6 +41,10 @@ const videoSchema = new mongoose.Schema(
       ref: "usermodel",
       required: true,
     },
+    thumbnail: {
+      type: String,
+      required: true,
+    },
   },
   { timestamps: true }
 );
