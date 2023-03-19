@@ -105,7 +105,7 @@ const verifyRefeshToken = async (req, res) => {
       return res.status(401).json({ message: "Access Denied" });
 
     const verified = jwt.verify(refreshToken, process.env.JWT_SECRET);
-    if (!verified) return res.status(401).json({ message: "Access Denied" });
+    if (!verified) return res.status(403).json({ message: "Access Denied" });
 
     const accessToken = generateToken(verified.id, "access");
     const newRefreshToken = generateToken(verified.id, "refresh");

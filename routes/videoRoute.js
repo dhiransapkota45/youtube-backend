@@ -9,6 +9,7 @@ const {
   getdislikedvideos,
   getallvideos,
   thumbnailupload,
+  getallvideosRandom,
 } = require("../controllers/videoController");
 const verifyToken = require("../middlewares/verifyToken");
 const uploadThumbnail = require("../utils/multer-thumbnail");
@@ -45,5 +46,7 @@ router.get("/getlikedvideos", verifyToken, getlikedvideos);
 router.get("/getdislikedvideos", verifyToken, getdislikedvideos);
 
 router.get("/getallvideos", verifyToken, getallvideos);
+
+router.get("/getallvideosrandom", getallvideosRandom);
 
 module.exports = router;
