@@ -200,6 +200,24 @@ const getallvideos = async (req, res) => {
   }
 };
 
+const getallvideosRandom = async (req, res) => {
+  try {
+    const findallvideos = await videomodel
+      .find()
+      .sort({ createdAt: -1 })
+      .populate({
+        path: "uploader",
+        select: "fullname profile_pic",
+      })
+      .select("thumbnail title uploader _id");
+    if (!findallvideos) return res.status(404).json({ msg: "no videos found" });
+
+    return res.status(200).json({ findallvideos });
+  } catch (error) {
+    return res.status(500).json({ error });
+  }
+};
+
 const thumbnailupload = async (req, res) => {
   try {
     const { id } = req.params;
@@ -230,4 +248,5 @@ module.exports = {
   getdislikedvideos,
   getallvideos,
   thumbnailupload,
+  getallvideosRandom,
 };
