@@ -8,7 +8,14 @@ const verifyToken = async (req, res, next) => {
     const verified = jwt.verify(token, process.env.JWT_SECRET);
 
     // console.log(verified);
-    const finduser = await usermodel.findById(verified.id);
+    const finduser = await usermodel
+      .findById(verified.id)
+      .select("-password")
+      .populate("subscriptions")
+      .populate("subscribers")
+      // .populate("videos")
+      // .populate("liked_videos")
+      // .populate("disliked_videos");
     req.user = finduser;
     next();
   } catch (error) {
