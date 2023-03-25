@@ -3,6 +3,7 @@ const fs = require("fs");
 const uploadThumbnail = require("../utils/multer-thumbnail");
 const mongoose = require("mongoose");
 const { log } = require("console");
+const commentmodel = require("../models/commentmodel");
 
 const uploadVideo = async (req, res) => {
   try {
@@ -87,6 +88,7 @@ const getvideodetails = async (req, res) => {
 
     const findvideo = await videomodel
       .findById(id)
+
       .populate({
         path: "comments",
         select: "-video -__v",
@@ -98,6 +100,9 @@ const getvideodetails = async (req, res) => {
         select: " fullname username profile_pic subscribers",
       })
       .select("-url -thumbnail -__v");
+
+      const details = findvideo.toObject();
+      console.log(details);
     if (!findvideo) return res.status(404).json({ msg: "video not found" });
 
     // let newvideo = {
