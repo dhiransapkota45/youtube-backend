@@ -7,6 +7,10 @@ const createcomment = async (req, res) => {
     if (!comment || !videoid)
       return res.status(400).json({ msg: "please enter all fields" });
 
+    const checkvideo = await videomodel.findById(videoid);
+    if (!checkvideo)
+      return res.status(400).json({ msg: "video does not exist" });
+
     const newcomment = await commentmodel.create({
       comment,
       video: videoid,
@@ -19,10 +23,15 @@ const createcomment = async (req, res) => {
       .populate({ path: "commenter", select: "username profile_pic" });
 
     if (parentComment) {
+      const checkparentcomment = await commentmodel.findById(parentComment);
+      if (!checkparentcomment)
+        return res.status(400).json({ msg: "parent comment does not exist" });
+
       const addtoreply = await commentmodel.findByIdAndUpdate(
         parentComment,
         {
           $push: { replies: newcomment._id },
+          $inc: { replyCount: 1 },
         },
         { new: true }
       );

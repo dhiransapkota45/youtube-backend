@@ -37,10 +37,10 @@ const commentSchema = new mongoose.Schema({
       ref: "commentmodel",
     },
   ],
-});
-
-commentSchema.virtual("totalReplies").get(function () {
-  return this.replies.length;
+  replyCount: {
+    type: Number,
+    default: 0,
+  },
 });
 
 const commentmodel = mongoose.model("commentmodel", commentSchema);

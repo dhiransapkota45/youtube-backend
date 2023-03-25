@@ -101,21 +101,28 @@ const getvideodetails = async (req, res) => {
       })
       .select("-url -thumbnail -__v");
 
-      const details = findvideo.toObject();
-      console.log(details);
     if (!findvideo) return res.status(404).json({ msg: "video not found" });
 
-    // let newvideo = {
-    //   ...findvideo._doc,
-    //   likes: findvideo.likes.length,
-    //   dislikes: findvideo.dislikes.length,
-    //   uploader: {
-    //     ...findvideo.uploader._doc,
-    //     subscribers: findvideo.uploader.subscribers.length,
-    //   },
-    // };
+    const obj = findvideo.toObject();
+    obj.likes = obj.likes.length;
+    obj.dislikes = obj.dislikes.length;
 
-    return res.status(200).json({ findvideo: findvideo });
+    //it is really time wasting to map if there is thousands of comments
+    //instead i should store the number of comments in the video model
+
+    //or i could add another field reply count in the comment model
+    //and update it when a reply is added
+    // const newdata = obj.comments.map((comment) => {
+    //   const { replies, likes, dislikes } = comment;
+    //   return {
+    //     ...comment,
+    //     likes: likes.length,
+    //     dislikes: dislikes.length,
+    //     replies: replies.length,
+    //   };
+    // });
+
+    return res.status(200).json({ findvideo: obj });
   } catch (error) {
     return res.status(500).json({ error });
   }
