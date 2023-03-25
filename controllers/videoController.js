@@ -121,7 +121,19 @@ const getvideodetails = async (req, res) => {
     //     replies: replies.length,
     //   };
     // });
-
+    if (req.unverifiedUser) {
+      obj.isliked = false;
+    } else {
+      const checkliked = await videomodel.findOne({
+        _id: id,
+        likes: req.user._id,
+      });
+      if (checkliked) {
+        obj.isliked = true;
+      } else {
+        obj.isliked = false;
+      }
+    }
     return res.status(200).json({ findvideo: obj });
   } catch (error) {
     return res.status(500).json({ error });

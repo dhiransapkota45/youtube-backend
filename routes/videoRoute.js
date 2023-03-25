@@ -40,7 +40,10 @@ router.post(
 
 router.get("/streamvideo/:id", streamvideo);
 
-router.get("/getvideodetails/:id", getvideodetails);
+router.get("/getvideodetails/:id",(req, res, next)=>{
+  isSpecialRoute = true;
+  verifyToken(req, res, next, isSpecialRoute)
+}, getvideodetails);
 
 router.post("/likevideo/:id", verifyToken, likevideo);
 
