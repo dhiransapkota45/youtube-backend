@@ -28,15 +28,19 @@ const commentSchema = new mongoose.Schema({
 
   parentComment: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "Comment",
+    ref: "commentmodel",
     default: null,
   },
   replies: [
     {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Comment",
+      ref: "commentmodel",
     },
   ],
+});
+
+commentSchema.virtual("totalReplies").get(function () {
+  return this.replies.length;
 });
 
 const commentmodel = mongoose.model("commentmodel", commentSchema);

@@ -33,11 +33,16 @@ router.post(
   thumbnailupload
 );
 
-router.post("/streamvideo/:id", verifyToken, streamvideo);
+// router.post("/streamvideo/:id", verifyToken, streamvideo);
 
-router.get("/getvideodetails/:id", verifyToken, getvideodetails);
+// router.get("/getvideodetails/:id", verifyToken, getvideodetails);
 
-router.get("/likevideo/:id", verifyToken, likevideo);
+
+router.get("/streamvideo/:id", streamvideo);
+
+router.get("/getvideodetails/:id", getvideodetails);
+
+router.post("/likevideo/:id", verifyToken, likevideo);
 
 router.get("/dislikevideo/:id", verifyToken, dislikevideo);
 

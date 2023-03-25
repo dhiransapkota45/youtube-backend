@@ -1,6 +1,9 @@
 const videomodel = require("../models/videomodel");
 const fs = require("fs");
 const uploadThumbnail = require("../utils/multer-thumbnail");
+const mongoose = require("mongoose");
+const { log } = require("console");
+const commentmodel = require("../models/commentmodel");
 
 const uploadVideo = async (req, res) => {
   try {
@@ -77,15 +80,42 @@ const streamvideo = async (req, res) => {
 };
 
 //here i need to populate likes and comments
+//i should use aggregations heere
 const getvideodetails = async (req, res) => {
   try {
     const { id } = req.params;
     if (!id) return res.status(400).json({ msg: "id is required" });
 
-    const findvideo = await videomodel.findById(id);
+    const findvideo = await videomodel
+      .findById(id)
+
+      .populate({
+        path: "comments",
+        select: "-video -__v",
+        match: { parentComment: null },
+        populate: { path: "commenter", select: "username profile_pic" },
+      })
+      .populate({
+        path: "uploader",
+        select: " fullname username profile_pic subscribers",
+      })
+      .select("-url -thumbnail -__v");
+
+      const details = findvideo.toObject();
+      console.log(details);
     if (!findvideo) return res.status(404).json({ msg: "video not found" });
 
-    return res.status(200).json({ findvideo });
+    // let newvideo = {
+    //   ...findvideo._doc,
+    //   likes: findvideo.likes.length,
+    //   dislikes: findvideo.dislikes.length,
+    //   uploader: {
+    //     ...findvideo.uploader._doc,
+    //     subscribers: findvideo.uploader.subscribers.length,
+    //   },
+    // };
+
+    return res.status(200).json({ findvideo: findvideo });
   } catch (error) {
     return res.status(500).json({ error });
   }
@@ -104,20 +134,28 @@ const likevideo = async (req, res) => {
     });
 
     if (checkalreadyliked) {
-      const unlike = await videomodel.findByIdAndUpdate(id, {
-        $pull: { likes: req.user._id },
-      });
-      return res.status(200).json({ msg: "unliked" });
+      const unlike = await videomodel.findByIdAndUpdate(
+        id,
+        {
+          $pull: { likes: req.user._id },
+        },
+        { new: true }
+      );
+      return res.status(200).json({ msg: "unliked", like: unlike });
     } else {
-      const like = await videomodel.findByIdAndUpdate(id, {
-        $push: { likes: req.user._id },
-      });
+      const like = await videomodel.findByIdAndUpdate(
+        id,
+        {
+          $push: { likes: req.user._id },
+        },
+        { new: true }
+      );
 
       //not sure it works or not, if error comes then try to fix it
       const removedislike = await videomodel.findByIdAndUpdate(id, {
         $pull: { dislikes: req.user._id },
       });
-      return res.status(200).json({ msg: "liked" });
+      return res.status(200).json({ msg: "liked", like });
     }
   } catch (error) {
     return res.status(500).json({ error });
@@ -209,7 +247,7 @@ const getallvideosRandom = async (req, res) => {
         path: "uploader",
         select: "fullname profile_pic",
       })
-      .select("thumbnail title uploader _id");
+      .select("thumbnail title uploader _id views createdAt");
     if (!findallvideos) return res.status(404).json({ msg: "no videos found" });
 
     return res.status(200).json({ findallvideos });
@@ -218,6 +256,7 @@ const getallvideosRandom = async (req, res) => {
   }
 };
 
+//here need to check if user is the owner of video or not
 const thumbnailupload = async (req, res) => {
   try {
     const { id } = req.params;
