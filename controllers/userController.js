@@ -46,6 +46,11 @@ const signin = async (req, res) => {
 
 const subscribe = async (req, res) => {
   try {
+    if (req.user._id === req.body._id)
+      return res
+        .status(400)
+        .json({ message: "You cannot subscribe to yourself" });
+
     const finduser = await usermodel.findById(req.body._id);
     if (!finduser) {
       return res.status(400).json({ message: "User does not exist" });
@@ -53,7 +58,10 @@ const subscribe = async (req, res) => {
 
     const subscription = await usermodel.findByIdAndUpdate(
       req.user._id,
-      { $push: { subscriptions: req.body._id } },
+      {
+        $push: { subscriptions: req.body._id },
+        $inc: { subscriptionLength: 1 },
+      },
       { new: true }
     );
 
@@ -61,6 +69,7 @@ const subscribe = async (req, res) => {
       req.body._id,
       {
         $push: { subscribers: req.user._id },
+        $inc: { subscribersLength: 1 },
       },
       { new: true }
     );
@@ -116,4 +125,30 @@ const verifyRefeshToken = async (req, res) => {
   }
 };
 
-module.exports = { signin, signup, subscribe, unsubscribe, verifyRefeshToken };
+const getSubScribedChannels = async (req, res) => {
+  try {
+    const finduser = await usermodel.findById(req.user._id);
+    if (!finduser) {
+      return res.status(400).json({ message: "User does not exist" });
+    }
+
+    const subscribedChannels = await usermodel
+      .find({
+        _id: { $in: finduser.subscriptions },
+      })
+      .select("-password -subscribers -subscriptions");
+
+    return res.status(200).json({ subscribedChannels });
+  } catch (error) {
+    return res.status(500).json(error);
+  }
+};
+
+module.exports = {
+  signin,
+  signup,
+  subscribe,
+  unsubscribe,
+  verifyRefeshToken,
+  getSubScribedChannels,
+};

@@ -4,6 +4,7 @@ const uploadThumbnail = require("../utils/multer-thumbnail");
 const mongoose = require("mongoose");
 const { log } = require("console");
 const commentmodel = require("../models/commentmodel");
+const usermodel = require("../models/usermodel");
 
 const uploadVideo = async (req, res) => {
   try {
@@ -91,7 +92,7 @@ const getvideodetails = async (req, res) => {
 
       .populate({
         path: "comments",
-        select: "-video -__v",
+        select: "-video -__v -replies",
         match: { parentComment: null },
         populate: { path: "commenter", select: "username profile_pic" },
       })
@@ -132,6 +133,16 @@ const getvideodetails = async (req, res) => {
         obj.isliked = true;
       } else {
         obj.isliked = false;
+      }
+
+      const checksuscribed = await usermodel.findOne({
+        _id: obj.uploader._id,
+        subscribers: req.user._id,
+      });
+      if (checksuscribed) {
+        obj.isSubscribed = true;
+      } else {
+        obj.isSubscribed = false;
       }
     }
     return res.status(200).json({ findvideo: obj });

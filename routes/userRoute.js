@@ -5,6 +5,7 @@ const {
   subscribe,
   unsubscribe,
   verifyRefeshToken,
+  getSubScribedChannels,
 } = require("../controllers/userController");
 const verifyToken = require("../middlewares/verifyToken");
 const router = express.Router();
@@ -22,5 +23,7 @@ router.post("/unsubscribe", verifyToken, unsubscribe);
 router.get("/user", verifyToken, (req, res) => {
   return res.status(200).json({ user: req.user });
 });
+
+router.get("/getsubscriptions", verifyToken, getSubScribedChannels);
 
 module.exports = router;

@@ -123,11 +123,11 @@ const getReplies = async (req, res) => {
 
     const replies = await commentmodel.findById(commentid).populate({
       path: "replies",
-      select: " -parentComment -__v ",
+      select: " -parentComment -__v -replies ",
       populate: { path: "commenter", select: "username profile_pic" },
     });
 
-    return res.status(200).json({ replies });
+    return res.status(200).json({ replies: replies.replies });
   } catch (error) {
     return res.status(500).send({ error });
   }
