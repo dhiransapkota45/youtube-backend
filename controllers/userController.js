@@ -1,6 +1,7 @@
 //fullname, username, password, profile_pic, description, subscribers, subscriptions, total_views, liked_videos, disliked_videos, videos,
 
 const usermodel = require("../models/usermodel");
+const videomodel = require("../models/videomodel");
 const generateToken = require("../utils/generateToken");
 
 const signup = async (req, res) => {
@@ -136,9 +137,40 @@ const getSubScribedChannels = async (req, res) => {
       .find({
         _id: { $in: finduser.subscriptions },
       })
-      .select("-password -subscribers -subscriptions");
+      .select("fullname username profile_pic subscribersLength");
 
     return res.status(200).json({ subscribedChannels });
+  } catch (error) {
+    return res.status(500).json(error);
+  }
+};
+
+const getChannelDetails = async (req, res) => {
+  try {
+    const { username } = req.body;
+    if (!username) {
+      return res.status(400).json({ message: "Username is required" });
+    }
+
+    const finduser = await usermodel
+      .findOne({ username })
+      .select("-password")
+      .populate({
+        path: "subscriptions",
+        select: "fullname username profile_pic",
+      });
+
+    if (!finduser) {
+      return res.status(400).json({ message: "User does not exist" });
+    }
+
+    const findvideos = await videomodel
+      .find({ uploader: finduser._id })
+      .select("title thumbnail views likes dislikes");
+
+    const obj = finduser.toObject();
+    const final = { ...obj, videos: findvideos };
+    return res.status(200).json({ channeldetails: final });
   } catch (error) {
     return res.status(500).json(error);
   }
@@ -151,4 +183,5 @@ module.exports = {
   unsubscribe,
   verifyRefeshToken,
   getSubScribedChannels,
+  getChannelDetails,
 };

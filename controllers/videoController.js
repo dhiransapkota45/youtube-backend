@@ -275,7 +275,7 @@ const getallvideosRandom = async (req, res) => {
       .sort({ createdAt: -1 })
       .populate({
         path: "uploader",
-        select: "fullname profile_pic",
+        select: "fullname profile_pic username",
       })
       .select("thumbnail title uploader _id views createdAt");
     if (!findallvideos) return res.status(404).json({ msg: "no videos found" });
