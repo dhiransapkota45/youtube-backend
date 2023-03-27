@@ -25,12 +25,20 @@ const userSchema = new mongoose.Schema({
       ref: "usermodel",
     },
   ],
+  subscriptionLength: {
+    type: Number,
+    default: 0,
+  },
   subscribers: [
     {
       type: mongoose.Schema.Types.ObjectId,
       ref: "usermodel",
     },
   ],
+  subscribersLength: {
+    type: Number,
+    default: 0,
+  },
   description: {
     type: String,
     default: "No description provided",
