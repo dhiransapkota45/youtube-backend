@@ -4,6 +4,8 @@ const usermodel = require("../models/usermodel");
 const videomodel = require("../models/videomodel");
 const generateToken = require("../utils/generateToken");
 
+const jwt = require("jsonwebtoken");
+
 const signup = async (req, res) => {
   try {
     const finduser = await usermodel.find({ username: req.body.username });
@@ -47,7 +49,7 @@ const signin = async (req, res) => {
 
 const subscribe = async (req, res) => {
   try {
-    if (req.user._id === req.body._id)
+    if (req.user._id.toString() === req.body._id)
       return res
         .status(400)
         .json({ message: "You cannot subscribe to yourself" });
@@ -110,19 +112,24 @@ const unsubscribe = async (req, res) => {
 
 const verifyRefeshToken = async (req, res) => {
   try {
-    const refreshToken = req.header("refreshToken");
+    const { refreshToken } = req.body;
     if (!refreshToken)
       return res.status(401).json({ message: "Access Denied" });
 
-    const verified = jwt.verify(refreshToken, process.env.JWT_SECRET);
-    if (!verified) return res.status(403).json({ message: "Access Denied" });
+    let verified;
+    try {
+      verified = jwt.verify(refreshToken, process.env.JWT_SECRET);
+    } catch (error) {
+      return res.status(403).json({ message: "Access Denied" });
+    }
 
     const accessToken = generateToken(verified.id, "access");
+
     const newRefreshToken = generateToken(verified.id, "refresh");
 
     return res.status(200).json({ accessToken, refreshToken: newRefreshToken });
   } catch (error) {
-    return res.status(500).json(error);
+    return res.status(500).json({ error: "error" });
   }
 };
 
