@@ -127,7 +127,7 @@ const verifyRefeshToken = async (req, res) => {
 
     const newRefreshToken = generateToken(verified.id, "refresh");
 
-    return res.status(200).json({ accessToken, refreshToken: newRefreshToken });
+    return res.status(201).json({ accessToken, refreshToken: newRefreshToken });
   } catch (error) {
     return res.status(500).json({ error: "error" });
   }

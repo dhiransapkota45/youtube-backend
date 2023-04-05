@@ -10,6 +10,7 @@ const {
   getallvideos,
   thumbnailupload,
   getallvideosRandom,
+  deleteVideo,
 } = require("../controllers/videoController");
 const verifyToken = require("../middlewares/verifyToken");
 const uploadThumbnail = require("../utils/multer-thumbnail");
@@ -37,13 +38,16 @@ router.post(
 
 // router.get("/getvideodetails/:id", verifyToken, getvideodetails);
 
-
 router.get("/streamvideo/:id", streamvideo);
 
-router.get("/getvideodetails/:id",(req, res, next)=>{
-  isSpecialRoute = true;
-  verifyToken(req, res, next, isSpecialRoute)
-}, getvideodetails);
+router.get(
+  "/getvideodetails/:id",
+  (req, res, next) => {
+    isSpecialRoute = true;
+    verifyToken(req, res, next, isSpecialRoute);
+  },
+  getvideodetails
+);
 
 router.post("/likevideo/:id", verifyToken, likevideo);
 
@@ -56,5 +60,7 @@ router.get("/getdislikedvideos", verifyToken, getdislikedvideos);
 router.get("/getallvideos", verifyToken, getallvideos);
 
 router.get("/getallvideosrandom", getallvideosRandom);
+
+router.delete("/deletevideo/:id", verifyToken, deleteVideo);
 
 module.exports = router;
