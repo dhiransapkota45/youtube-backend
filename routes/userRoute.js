@@ -8,6 +8,7 @@ const {
   getSubScribedChannels,
   getChannelDetails,
   watchLater,
+  getWatchLater,
 } = require("../controllers/userController");
 const verifyToken = require("../middlewares/verifyToken");
 const router = express.Router();
@@ -34,5 +35,6 @@ router.get("/getsubscriptions", verifyToken, getSubScribedChannels);
 
 router.post("/getchannel", getChannelDetails);
 router.post("/watchlater", verifyToken, watchLater);
+router.get("/getwatchlater", verifyToken, getWatchLater);
 
 module.exports = router;

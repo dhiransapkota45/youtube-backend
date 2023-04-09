@@ -190,6 +190,15 @@ const watchLater = async (req, res) => {
       return res.status(400).json({ message: "Video id is required" });
     }
 
+    const findIfAlreadyAdded = await usermodel.findOne({
+      _id: req.user._id,
+      watchLater: videoId,
+    });
+
+    if (findIfAlreadyAdded) {
+      return res.status(400).json({ message: "Already added to watch later" });
+    }
+
     const watchLater = await usermodel.findByIdAndUpdate(
       req.user._id,
       {
@@ -204,6 +213,25 @@ const watchLater = async (req, res) => {
   }
 };
 
+const getWatchLater = async (req, res) => {
+  try {
+    const finduser = await usermodel.findById(req.user._id);
+    if (!finduser) {
+      return res.status(400).json({ message: "User does not exist" });
+    }
+
+    const watchLater = await videomodel
+      .find({
+        _id: { $in: finduser.watchLater },
+      })
+      .select("title thumbnail views");
+
+    return res.status(200).json({ watchLater });
+  } catch (error) {
+    return res.status(500).json(error);
+  }
+};
+
 module.exports = {
   signin,
   signup,
@@ -213,4 +241,5 @@ module.exports = {
   getSubScribedChannels,
   getChannelDetails,
   watchLater,
+  getWatchLater,
 };
