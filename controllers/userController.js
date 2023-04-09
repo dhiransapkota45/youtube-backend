@@ -127,7 +127,7 @@ const verifyRefeshToken = async (req, res) => {
 
     const newRefreshToken = generateToken(verified.id, "refresh");
 
-    return res.status(200).json({ accessToken, refreshToken: newRefreshToken });
+    return res.status(201).json({ accessToken, refreshToken: newRefreshToken });
   } catch (error) {
     return res.status(500).json({ error: "error" });
   }
@@ -183,6 +183,55 @@ const getChannelDetails = async (req, res) => {
   }
 };
 
+const watchLater = async (req, res) => {
+  try {
+    const { videoId } = req.body;
+    if (!videoId) {
+      return res.status(400).json({ message: "Video id is required" });
+    }
+
+    const findIfAlreadyAdded = await usermodel.findOne({
+      _id: req.user._id,
+      watchLater: videoId,
+    });
+
+    if (findIfAlreadyAdded) {
+      return res.status(400).json({ message: "Already added to watch later" });
+    }
+
+    const watchLater = await usermodel.findByIdAndUpdate(
+      req.user._id,
+      {
+        $push: { watchLater: videoId },
+      },
+      { new: true }
+    );
+
+    return res.status(200).json({ msg: "Added to watch later" });
+  } catch (error) {
+    return res.status(500).json(error);
+  }
+};
+
+const getWatchLater = async (req, res) => {
+  try {
+    const finduser = await usermodel.findById(req.user._id);
+    if (!finduser) {
+      return res.status(400).json({ message: "User does not exist" });
+    }
+
+    const watchLater = await videomodel
+      .find({
+        _id: { $in: finduser.watchLater },
+      })
+      .select("title thumbnail views");
+
+    return res.status(200).json({ watchLater });
+  } catch (error) {
+    return res.status(500).json(error);
+  }
+};
+
 module.exports = {
   signin,
   signup,
@@ -191,4 +240,6 @@ module.exports = {
   verifyRefeshToken,
   getSubScribedChannels,
   getChannelDetails,
+  watchLater,
+  getWatchLater,
 };

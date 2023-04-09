@@ -135,6 +135,16 @@ const getvideodetails = async (req, res) => {
         obj.isliked = false;
       }
 
+      const disliked = await videomodel.findOne({
+        _id: id,
+        dislikes: req.user._id,
+      });
+      if (disliked) {
+        obj.isdisliked = true;
+      } else {
+        obj.isdisliked = false;
+      }
+
       const checksuscribed = await usermodel.findOne({
         _id: obj.uploader._id,
         subscribers: req.user._id,
@@ -153,15 +163,20 @@ const getvideodetails = async (req, res) => {
 
 const likevideo = async (req, res) => {
   try {
+    console.log("hello1");
     const { id } = req.params;
     if (!id) return res.status(400).json({ msg: "video id is required" });
+    console.log("hello2");
 
     const findvideo = await videomodel.findById(id);
     if (!findvideo) return res.status(404).json({ msg: "video not found" });
+    console.log("hello3");
 
     const checkalreadyliked = await videomodel.findOne({
+      _id: id,
       likes: req.user._id,
     });
+    console.log("hell4", checkalreadyliked);
 
     if (checkalreadyliked) {
       const unlike = await videomodel.findByIdAndUpdate(
@@ -171,6 +186,8 @@ const likevideo = async (req, res) => {
         },
         { new: true }
       );
+      console.log("hello5");
+
       return res.status(200).json({ msg: "unliked", like: unlike });
     } else {
       const like = await videomodel.findByIdAndUpdate(
@@ -185,6 +202,8 @@ const likevideo = async (req, res) => {
       const removedislike = await videomodel.findByIdAndUpdate(id, {
         $pull: { dislikes: req.user._id },
       });
+
+      console.log("hello6");
       return res.status(200).json({ msg: "liked", like });
     }
   } catch (error) {
@@ -307,6 +326,29 @@ const thumbnailupload = async (req, res) => {
   }
 };
 
+const deleteVideo = async (req, res) => {
+  try {
+    const { id } = req.params;
+    if (!id) return res.status(400).json({ msg: "video id is required" });
+
+    const finduser = await usermodel.findById(req.user._id);
+    if (!finduser) return res.status(404).json({ msg: "user not found" });
+
+    const findvideo = await videomodel.findById(id);
+    if (!findvideo) return res.status(404).json({ msg: "video not found" });
+
+    if (findvideo.uploader._id.toString() !== req.user._id.toString())
+      return res.status(401).json({ msg: "unauthorized" });
+
+    const deletevideo = await videomodel.findByIdAndDelete(id);
+    if (!deletevideo) return res.status(404).json({ msg: "video not found" });
+
+    return res.status(200).json({ msg: "video deleted" });
+  } catch (error) {
+    return res.status(500).json({ error });
+  }
+};
+
 module.exports = {
   uploadVideo,
   streamvideo,
@@ -318,4 +360,5 @@ module.exports = {
   getallvideos,
   thumbnailupload,
   getallvideosRandom,
+  deleteVideo,
 };

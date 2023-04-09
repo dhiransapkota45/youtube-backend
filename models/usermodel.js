@@ -43,6 +43,12 @@ const userSchema = new mongoose.Schema({
     type: String,
     default: "No description provided",
   },
+  watchLater: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "videomodel",
+    },
+  ]
   // videos: [
   //   {
   //     type: mongoose.Schema.Types.ObjectId,
