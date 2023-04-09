@@ -183,6 +183,27 @@ const getChannelDetails = async (req, res) => {
   }
 };
 
+const watchLater = async (req, res) => {
+  try {
+    const { videoId } = req.body;
+    if (!videoId) {
+      return res.status(400).json({ message: "Video id is required" });
+    }
+
+    const watchLater = await usermodel.findByIdAndUpdate(
+      req.user._id,
+      {
+        $push: { watchLater: videoId },
+      },
+      { new: true }
+    );
+
+    return res.status(200).json({ msg: "Added to watch later" });
+  } catch (error) {
+    return res.status(500).json(error);
+  }
+};
+
 module.exports = {
   signin,
   signup,
@@ -191,4 +212,5 @@ module.exports = {
   verifyRefeshToken,
   getSubScribedChannels,
   getChannelDetails,
+  watchLater,
 };

@@ -43,6 +43,18 @@ const userSchema = new mongoose.Schema({
     type: String,
     default: "No description provided",
   },
+  watchLater: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "videomodel",
+    },
+  ],
+  tags : [
+    {
+      type: String,
+      enum:["Music","Gaming","Sports","News","Movies","Comedy","Education","Entertainment","Fashion","Science","Technology","Travel","Vlogs","Animals","Autos","Comedy","Education","Entertainment","Film","Howto","Music","News","Nonprofits","Activism","People","Animals","Tech","Shows","Trailers","Travel","Vlogs","Sports","Science","Movies","Gaming","Food","Comedy","Education","Entertainment","Film","Howto","Music","News","Nonprofits","Activism","People","Animals","Tech","Shows","Trailers","Travel","Vlogs","Sports","Science","Movies","Gaming","Food","Comedy","Education","Entertainment","Film","Howto","Music","News","Nonprofits","Activism","People","Animals","Tech","Shows","Trailers","Travel","Vlogs","Sports","Science","Movies","Gaming","Food","Comedy","Education","Entertainment","Film","Howto","Music","News","Nonprofits","Activism","People","Animals","Tech","Shows","Trailers","Travel","Vlogs","Sports","Science","Movies","Gaming","Food","Comedy","Education","Entertainment","Film","Howto","Music","News","Nonprofits","Activism","People","Animals","Tech","Shows","Trailers","Travel","Vlogs","Sports","Science","Movies","Gaming","Food","Comedy","Education","Entertainment","Film","Howto","Music","News","Nonprofits","Activism","People","Animals","Tech","Shows","Trailers","Travel","Vlogs","Sports","Science","Movies","Gaming","Food","Comedy","Education","Entertainment","Film","Howto","Music","News","Nonprofits","Activism","People","Animals","Tech","Shows","Trailers","Travel","Vlogs","Sports","Science","Movies","Gaming","Food","Comedy","Education","Entertainment","Film","Howto","Music","News","Nonprofits","Activism","People","Animals","Tech","Shows","Trailers","Travel","Vlogs","Sports","Science","Movies","Gaming","Food","Comedy","Education","Entertainment","Film","Howto","Music","News","Nonprofits","Activism","People","Animals","Tech","Shows","Trailers","Travel","Vlogs","Sports","Science","Movies","Gaming","Food","Comedy","Education"]
+    }
+  ],
   // videos: [
   //   {
   //     type: mongoose.Schema.Types.ObjectId,
